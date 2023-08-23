@@ -1,11 +1,11 @@
-import { Environment } from '@usecapsule/web-sdk/dist/definitions';
+import { Environment } from '@usecapsule/web-sdk';
 import dynamic from 'next/dynamic';
 
 // Dynamically import only the React component
 const DynamicCapsuleButton = dynamic(
   () =>
-    import('@usecapsule/web-sdk/dist/modal/CapsuleModal').then(
-      (res) => res.CapsuleButton
+    import('@usecapsule/web-sdk').then(
+      (res) => res.Button
     ),
   {
     loading: () => <p>Loading...</p>,
