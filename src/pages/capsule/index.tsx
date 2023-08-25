@@ -1,5 +1,6 @@
-import { Environment } from '@usecapsule/web-sdk';
+import Capsule, { Environment } from '@usecapsule/web-sdk';
 import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
 // Dynamically import only the React component
 const DynamicCapsuleButton = dynamic(
@@ -14,23 +15,24 @@ const DynamicCapsuleButton = dynamic(
 );
 
 const CapsuleInstance = () => {
-  let capsuleInstance;
+  const [capsuleInstance, setCapsuleInstance] = useState<Capsule | null>(null);
 
-  if (typeof window !== 'undefined') {
-    const Capsule = require('@usecapsule/web-sdk').default;
-    capsuleInstance = new Capsule(Environment.BETA, undefined, {
-      offloadMPCComputationURL: 'https://partner-mpc-computation.beta.usecapsule.com',
+  useEffect(() => {
+    import('@usecapsule/web-sdk').then(CapsuleModule => {
+      const Capsule = CapsuleModule.default;
+      const instance = new Capsule(Environment.BETA, undefined, {
+        offloadMPCComputationURL: 'https://partner-mpc-computation.beta.usecapsule.com',
+      });
+      setCapsuleInstance(instance);
     });
-  }
+  }, []);
 
+  // Return the component only when capsuleInstance is ready
+  if (!capsuleInstance) return <p>Loading...</p>;
 
-  return (
-    <DynamicCapsuleButton
-      capsule={capsuleInstance}
-      appName={'Capsule Marketplace'}
-    />
-  );
-}
+  return <DynamicCapsuleButton capsule={capsuleInstance} appName={'Capsule Marketplace'} />;
+};
+
 
 const CapsulePage = () => {
   return (
